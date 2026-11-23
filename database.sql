@@ -1,0 +1,46 @@
+CREATE DATABASE IF NOT EXISTS logistica
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE logistica;
+
+CREATE TABLE IF NOT EXISTS enderecos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tipo ENUM('origem', 'destino', 'ambos') NOT NULL DEFAULT 'ambos',
+  logradouro VARCHAR(150) NOT NULL,
+  numero VARCHAR(20) DEFAULT NULL,
+  bairro VARCHAR(80) DEFAULT NULL,
+  cidade VARCHAR(80) NOT NULL,
+  uf CHAR(2) NOT NULL,
+  cep VARCHAR(9) DEFAULT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS transportadores (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(120) NOT NULL,
+  documento VARCHAR(20) DEFAULT NULL,
+  placa VARCHAR(10) DEFAULT NULL,
+  telefone VARCHAR(20) DEFAULT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS fretes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  data_frete DATE NOT NULL,
+  transportador_id INT NOT NULL,
+  origem_id INT NOT NULL,
+  destino_id INT NOT NULL,
+  observacoes VARCHAR(255) DEFAULT NULL,
+  FOREIGN KEY (transportador_id) REFERENCES transportadores(id),
+  FOREIGN KEY (origem_id) REFERENCES enderecos(id),
+  FOREIGN KEY (destino_id) REFERENCES enderecos(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS produtos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  descricao VARCHAR(150) NOT NULL,
+  peso DECIMAL(10,2) DEFAULT 0.00,
+  volume DECIMAL(10,3) DEFAULT 0.000,
+  valor DECIMAL(10,2) DEFAULT 0.00,
+  frete_id INT DEFAULT NULL,
+  FOREIGN KEY (frete_id) REFERENCES fretes(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
